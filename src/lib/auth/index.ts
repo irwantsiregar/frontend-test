@@ -1,7 +1,9 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import authServices from "@/services/auth.services";
+import { JWTExtended, SessionExtended, UserExtended } from "@/types/Auth";
 
-export const authOptions: NextAuthOptions = {
+const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -12,24 +14,27 @@ export const authOptions: NextAuthOptions = {
       async authorize(
         credentials: Record<"email" | "password", string> | undefined,
       ): Promise<any | null> {
-        if (!credentials?.email || !credentials?.password) {
+        const { email, password } = credentials as {
+          email: string;
+          password: string;
+        };
+
+        const response = await authServices.login({
+          email,
+          password,
+        });
+
+        console.log("AuthServices: ", response);
+
+        const token = response?.data?.result?.token;
+        const user = response?.data?.result?.user;
+
+        if (token?.accessToken && user && response?.data?.status === 200) {
+          user.accessToken = token.accessToken;
+          return user;
+        } else {
           return null;
         }
-
-        // Mock authentication - replace with real API call
-        if (
-          credentials.email === "admin@inventoryhub.com" &&
-          credentials.password === "password123"
-        ) {
-          return {
-            id: "1",
-            email: "admin@inventoryhub.com",
-            name: "Admin User",
-            role: "admin",
-          };
-        }
-
-        return null;
       },
     }),
   ],
@@ -37,16 +42,29 @@ export const authOptions: NextAuthOptions = {
     strategy: "jwt",
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({
+      token,
+      user,
+    }: {
+      token: JWTExtended;
+      user: UserExtended | null;
+    }) {
       if (user) {
-        token.role = user.role;
+        token.user = user;
       }
+
       return token;
     },
-    async session({ session, token }) {
-      if (token) {
-        session.user.role = token.role as string;
-      }
+    async session({
+      session,
+      token,
+    }: {
+      session: SessionExtended;
+      token: JWTExtended;
+    }) {
+      session.user = token.user;
+      session.accessToken = token.user?.accessToken;
+
       return session;
     },
   },
@@ -55,3 +73,5 @@ export const authOptions: NextAuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
 };
+
+export default authOptions;

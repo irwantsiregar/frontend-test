@@ -1,8 +1,11 @@
+import { ToasterProvider } from "@/contexts/ToasterContexts";
+import authOptions from "@/lib/auth";
 import QueryProvider from "@/providers/query-provider";
 import AuthProvider from "@/providers/session-provider";
 import type { Metadata } from "next";
+import { getServerSession } from "next-auth";
 import { Inter } from "next/font/google";
-import "../styles/globals.css";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,16 +14,20 @@ export const metadata: Metadata = {
   description: "Professional inventory management system",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthProvider>
-          <QueryProvider>{children}</QueryProvider>
+        <AuthProvider session={session}>
+          <QueryProvider>
+            <ToasterProvider>{children}</ToasterProvider>
+          </QueryProvider>
         </AuthProvider>
       </body>
     </html>
