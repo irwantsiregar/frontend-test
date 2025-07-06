@@ -4,7 +4,7 @@ import { cn } from "@/utils/cn";
 import { Eye, EyeOff, Package } from "lucide-react";
 import useLogin from "./useLogin";
 
-export default function LoginPage() {
+export default function Login() {
   const {
     isVisible,
     toggleVisibility,

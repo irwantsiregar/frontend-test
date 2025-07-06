@@ -5,7 +5,7 @@ import { ILogin } from "@/types/Auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { signIn } from "next-auth/react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -19,7 +19,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 const useLogin = () => {
   const router = useRouter();
-  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const { toaster, setToaster } = useContext(ToasterContext);
 
@@ -33,7 +33,8 @@ const useLogin = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const callbackUrl: string = (pathname as string) || "/inventory";
+  const callbackUrl: string = searchParams.get("callbackUrl") || "/inventory";
+  console.info(callbackUrl);
 
   const loginService = async (payload: ILogin) => {
     const result = await signIn("credentials", {
@@ -50,7 +51,6 @@ const useLogin = () => {
   const { mutate: mutateLogin, isPending: isPendingLogin } = useMutation({
     mutationFn: loginService,
     onError: (error) => {
-      console.log(error);
       const err = (error?.message || error) as string;
 
       setToaster({
@@ -66,6 +66,7 @@ const useLogin = () => {
         message: "Login Success",
       });
 
+      console.log(callbackUrl);
       router.push(callbackUrl);
     },
   });
