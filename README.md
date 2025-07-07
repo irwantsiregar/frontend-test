@@ -22,15 +22,38 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+## Admin Website Assignment (Next.js + TypeScript)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Project Requirements
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Create an admin website using Next.js with TypeScript, implementing the following pages with authentication:
 
-## Deploy on Vercel
+#### Pages Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Login Page
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Redirects to Inventories if already authenticated
+Form with email/password fields
+Login button that calls the API
+Inventories Page (CRUD)
+List all inventory items (table view)
+Create new inventory items
+Edit existing items
+Delete items
+Requires authentication
+Users Page (CRUD)
+List all users (table view)
+Create new users
+Edit existing users
+Delete users
+Requires authentication
+Technical Requirements
+Use Next.js App Router
+TypeScript for type safety
+Style with either:
+Tailwind CSS (recommended), or
+Material-UI (MUI)
+Implement proper authentication flow using the provided API
+Use React Hook Form for form handling (recommended)
+Implement proper error handling
+Responsive design

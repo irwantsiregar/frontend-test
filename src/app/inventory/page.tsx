@@ -10,7 +10,6 @@ export default function InventoryPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  console.info("STATUS: ", status);
 
   // Redirect if not authenticated
   useEffect(() => {

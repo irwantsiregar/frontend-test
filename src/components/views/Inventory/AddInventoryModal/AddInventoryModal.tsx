@@ -39,8 +39,6 @@ const AddInventoryModal = (props: IAddInventoryModalProps) => {
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  // console.log(selectedImage);
-
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageUpload = () => {

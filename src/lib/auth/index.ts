@@ -64,6 +64,7 @@ const authOptions: NextAuthOptions = {
     }) {
       session.user = token.user;
       session.accessToken = token.user?.accessToken;
+      session.refreshToken = token.user?.refreshToken;
 
       return session;
     },

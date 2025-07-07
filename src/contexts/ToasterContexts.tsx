@@ -25,8 +25,6 @@ const ToasterContext = createContext<IToasterState>({
 const ToasterProvider = ({ children }: { children: ReactNode }) => {
   const [toaster, setToaster] = useState<IToaster>(defaultToaster);
 
-  // console.log('Toaster', toaster)
-
   return (
     <ToasterContext.Provider value={{ toaster, setToaster }}>
       {children}

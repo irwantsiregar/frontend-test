@@ -8,10 +8,12 @@ interface ILogin {
 
 interface UserExtended extends User {
   accessToken?: string;
+  refreshToken?: string;
 }
 
 interface SessionExtended extends Session {
   accessToken?: string;
+  refreshToken?: string;
 }
 
 interface JWTExtended extends JWT {
