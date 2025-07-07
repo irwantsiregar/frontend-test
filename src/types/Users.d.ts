@@ -1,0 +1,19 @@
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  image?: string | File;
+  isImmutable: boolean;
+}
+
+type TPassword = string;
+
+interface IAddUserForm extends Pick<User, "password"> {
+  password: TPassword;
+}
+
+interface IUpdateUserForm extends User {}
+
+type UserList = User[];
+
+export type { UserList, User, IAddUserForm, IUpdateUserForm, TPassword };

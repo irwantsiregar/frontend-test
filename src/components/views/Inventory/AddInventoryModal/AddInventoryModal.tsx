@@ -1,3 +1,5 @@
+"use client";
+
 import FormModal from "@/components/ui/form-modal";
 import { cn } from "@/utils/cn";
 import { Upload, X } from "lucide-react";
@@ -24,9 +26,8 @@ const AddInventoryModal = (props: IAddInventoryModalProps) => {
     isPendingMutateAddInventory,
     isSuccessMutateAddInventory,
 
-    preview,
-
-    setValue,
+    setSelectedImage,
+    selectedImage,
   } = useAddInventoryModal();
 
   useEffect(() => {
@@ -37,7 +38,8 @@ const AddInventoryModal = (props: IAddInventoryModalProps) => {
   }, [isSuccessMutateAddInventory]);
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
+  // console.log(selectedImage);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -45,10 +47,23 @@ const AddInventoryModal = (props: IAddInventoryModalProps) => {
     fileInputRef.current?.click();
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      setSelectedImage(file);
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleImageRemove = () => {
     setImagePreview(null);
-    setSelectedImage(null);
-    setValue("image", undefined);
+    setSelectedImage("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -59,8 +74,9 @@ const AddInventoryModal = (props: IAddInventoryModalProps) => {
       isOpen={isOpen}
       onClose={() => {
         onClose();
+        reset();
         setImagePreview(null);
-        setSelectedImage(null);
+        setSelectedImage("");
       }}
       title={"Add New Item"}
       maxWidth="2xl"
@@ -76,7 +92,7 @@ const AddInventoryModal = (props: IAddInventoryModalProps) => {
           </label>
 
           {imagePreview ? (
-            <div className="relative h-32 w-32 overflow-hidden rounded-lg border-2 border-dashed border-gray-300 bg-gray-100">
+            <div className="group relative h-32 w-32 overflow-hidden rounded-lg border-2 border-dashed border-gray-300 bg-gray-100">
               <img
                 src={imagePreview}
                 alt="Preview"
@@ -85,29 +101,31 @@ const AddInventoryModal = (props: IAddInventoryModalProps) => {
               <button
                 type="button"
                 onClick={handleImageRemove}
-                className="absolute top-1 right-1 rounded-full bg-red-500 p-1 text-white transition-colors hover:bg-red-600"
+                className="absolute top-1 right-1 rounded-full bg-red-500 p-1 text-white opacity-0 transition-colors group-hover:opacity-100 hover:bg-red-600"
               >
                 <X className="h-3 w-3" />
               </button>
             </div>
           ) : (
-            <div
+            <button
+              type="button"
               onClick={handleImageUpload}
-              className="flex h-32 w-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 transition-colors hover:border-blue-400 hover:bg-blue-50"
+              className="group flex h-32 w-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 transition-colors hover:border-blue-400 hover:bg-blue-50"
             >
-              <Upload className="mb-2 h-6 w-6 text-gray-400" />
-              <span className="text-center text-xs text-gray-500">
+              <Upload className="mb-2 h-6 w-6 text-gray-400 transition-colors group-hover:text-blue-500" />
+              <span className="text-center text-xs text-gray-500 transition-colors group-hover:text-blue-600">
                 Click to upload
               </span>
-            </div>
+            </button>
           )}
 
           <input
             ref={fileInputRef}
             type="file"
             accept="image/*"
-            {...register("image")}
+            onChange={handleFileChange}
             className="hidden"
+            multiple={false}
           />
 
           <p className="text-xs text-gray-500">
@@ -162,6 +180,7 @@ const AddInventoryModal = (props: IAddInventoryModalProps) => {
                 valueAsNumber: true,
                 min: { value: 0, message: "Quantity must be non-negative" },
               })}
+              defaultValue={0}
               className={cn(
                 "w-full rounded-lg border px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500",
                 errors.stockQuantity ? "border-red-500" : "border-gray-300",
@@ -202,7 +221,7 @@ const AddInventoryModal = (props: IAddInventoryModalProps) => {
             onClick={() => {
               onClose();
               setImagePreview(null);
-              setSelectedImage(null);
+              setSelectedImage("");
             }}
             className="px-4 py-2 text-gray-600 transition-colors hover:cursor-pointer hover:text-gray-800"
           >

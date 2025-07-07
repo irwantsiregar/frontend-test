@@ -1,3 +1,4 @@
+import AppShell from "@/components/commons/AppShell";
 import { ToasterProvider } from "@/contexts/ToasterContexts";
 import authOptions from "@/lib/auth";
 import QueryProvider from "@/providers/query-provider";
@@ -26,7 +27,9 @@ export default async function RootLayout({
       <body className={inter.className}>
         <AuthProvider session={session}>
           <QueryProvider>
-            <ToasterProvider>{children}</ToasterProvider>
+            <ToasterProvider>
+              <AppShell>{children}</AppShell>
+            </ToasterProvider>
           </QueryProvider>
         </AuthProvider>
       </body>

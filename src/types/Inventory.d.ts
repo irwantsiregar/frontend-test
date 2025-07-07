@@ -4,7 +4,7 @@ interface InventoryItem {
   description: string;
   stockQuantity: number;
   code: string;
-  image: string | File;
+  image?: string | File;
 }
 
 interface IInventoryForm extends Omit<InventoryItem, "id"> {

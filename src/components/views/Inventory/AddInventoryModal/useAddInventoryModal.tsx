@@ -1,34 +1,18 @@
 import { ToasterContext } from "@/contexts/ToasterContexts";
-import { IInventoryForm } from "@/types/Inventory";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "@tanstack/react-query";
-import { useContext } from "react";
-import { useForm } from "react-hook-form";
-
 import inventoryServices from "@/services/inventory.services";
+import { IInventoryForm } from "@/types/Inventory";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useMutation } from "@tanstack/react-query";
+import { useContext, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
 
-import { z } from "zod";
-
-const addInventorySchema = z.object({
-  name: z.string(),
-  code: z.string(),
-  description: z.string(),
-  stockQuantity: z.number(),
-  image: z
-    .union([
-      z
-        .instanceof(File, { message: "Image is required" })
-        .refine((file) => !file || file.size !== 0 || file.size <= 5000000, {
-          message: "Max size exceeded",
-        }),
-      z.string().optional(), // to hold default image
-    ])
-    .refine((value) => value instanceof File || typeof value === "string", {
-      message: "Image is required",
-    }),
+const addInventorySchema = yup.object().shape({
+  name: yup.string().required("Please input name"),
+  code: yup.string().required("Please input code"),
+  stockQuantity: yup.number().required("Please stock quantity"),
+  description: yup.string().required("Please input description"),
 });
-
-type addInventoryFormData = z.infer<typeof addInventorySchema>;
 
 const useAddInventoryModal = () => {
   const { setToaster } = useContext(ToasterContext);
@@ -42,23 +26,29 @@ const useAddInventoryModal = () => {
     getValues,
     setValue,
   } = useForm({
-    resolver: zodResolver(addInventorySchema),
+    resolver: yupResolver(addInventorySchema),
   });
 
-  const preview = watch("image");
-  const fileUrl = getValues("image");
-
-  console.log(preview)
+  const [selectedImage, setSelectedImage] = useState<File | string>("");
 
   const handleOnClose = (onClose: () => void) => {
     reset();
     onClose();
   };
 
-  const addInventory = async (payload: IInventoryForm) => {
-    const response = await inventoryServices.addInventory(payload);
+  const addInventory = async (data: IInventoryForm) => {
+    const formData = new FormData();
 
-    console.info("RES: ", response);
+    const payload = {
+      ...data,
+    };
+
+    if (selectedImage) {
+      formData.append("image", selectedImage);
+      payload.image = formData.get("image") || "";
+    }
+
+    const response = await inventoryServices.addInventory(payload);
 
     return response;
   };
@@ -98,9 +88,10 @@ const useAddInventoryModal = () => {
     isPendingMutateAddInventory,
     isSuccessMutateAddInventory,
 
-    preview,
-
     setValue,
+
+    setSelectedImage,
+    selectedImage,
   };
 };
 

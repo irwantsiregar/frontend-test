@@ -1,3 +1,5 @@
+"use client";
+
 import Toaster from "@/components/ui/toaster";
 import { defaultToaster, ToasterContext } from "@/contexts/ToasterContexts";
 import { ReactNode, useContext, useEffect } from "react";

@@ -176,7 +176,7 @@ export default function Inventory() {
         )}
       />
 
-      {/* Delete Modal */}
+      {/* Add Modal */}
       <AddInventoryModal
         {...addInventory}
         refetchInventories={refetchInventories}

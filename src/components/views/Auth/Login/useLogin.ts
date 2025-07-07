@@ -34,7 +34,6 @@ const useLogin = () => {
   });
 
   const callbackUrl: string = searchParams.get("callbackUrl") || "/inventory";
-  console.info(callbackUrl);
 
   const loginService = async (payload: ILogin) => {
     const result = await signIn("credentials", {
@@ -66,7 +65,6 @@ const useLogin = () => {
         message: "Login Success",
       });
 
-      console.log(callbackUrl);
       router.push(callbackUrl);
     },
   });
