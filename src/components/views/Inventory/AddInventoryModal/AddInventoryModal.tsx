@@ -1,0 +1,232 @@
+import FormModal from "@/components/ui/form-modal";
+import { cn } from "@/utils/cn";
+import { Upload, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import useAddInventoryModal from "./useAddInventoryModal";
+
+interface IAddInventoryModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  refetchInventories: () => void;
+}
+
+const AddInventoryModal = (props: IAddInventoryModalProps) => {
+  const { isOpen, onClose, refetchInventories } = props;
+
+  const {
+    register,
+    errors,
+    reset,
+    handleSubmitForm,
+    handleAddInventory,
+    handleOnClose,
+
+    isPendingMutateAddInventory,
+    isSuccessMutateAddInventory,
+
+    preview,
+
+    setValue,
+  } = useAddInventoryModal();
+
+  useEffect(() => {
+    if (isSuccessMutateAddInventory) {
+      onClose();
+      refetchInventories();
+    }
+  }, [isSuccessMutateAddInventory]);
+
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleImageRemove = () => {
+    setImagePreview(null);
+    setSelectedImage(null);
+    setValue("image", undefined);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  return (
+    <FormModal
+      isOpen={isOpen}
+      onClose={() => {
+        onClose();
+        setImagePreview(null);
+        setSelectedImage(null);
+      }}
+      title={"Add New Item"}
+      maxWidth="2xl"
+    >
+      <form
+        onSubmit={handleSubmitForm(handleAddInventory)}
+        className="space-y-6"
+      >
+        {/* Image Upload Section */}
+        <div className="space-y-4">
+          <label className="block text-sm font-medium text-gray-700">
+            Product Image
+          </label>
+
+          {imagePreview ? (
+            <div className="relative h-32 w-32 overflow-hidden rounded-lg border-2 border-dashed border-gray-300 bg-gray-100">
+              <img
+                src={imagePreview}
+                alt="Preview"
+                className="h-full w-full object-cover"
+              />
+              <button
+                type="button"
+                onClick={handleImageRemove}
+                className="absolute top-1 right-1 rounded-full bg-red-500 p-1 text-white transition-colors hover:bg-red-600"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          ) : (
+            <div
+              onClick={handleImageUpload}
+              className="flex h-32 w-32 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 transition-colors hover:border-blue-400 hover:bg-blue-50"
+            >
+              <Upload className="mb-2 h-6 w-6 text-gray-400" />
+              <span className="text-center text-xs text-gray-500">
+                Click to upload
+              </span>
+            </div>
+          )}
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            {...register("image")}
+            className="hidden"
+          />
+
+          <p className="text-xs text-gray-500">
+            Upload a product image (JPG, PNG, GIF up to 5MB)
+          </p>
+        </div>
+
+        {/* Form Fields */}
+        <div>
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            Name *
+          </label>
+          <input
+            type="text"
+            {...register("name", { required: "Name is required" })}
+            className={cn(
+              "w-full rounded-lg border px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500",
+              errors.name ? "border-red-500" : "border-gray-300",
+            )}
+          />
+          {errors.name && (
+            <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>
+          )}
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            Code *
+          </label>
+          <input
+            type="text"
+            {...register("code", { required: "Code is required" })}
+            className={cn(
+              "w-full rounded-lg border px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500",
+              errors.code ? "border-red-500" : "border-gray-300",
+            )}
+          />
+          {errors.code && (
+            <p className="mt-1 text-sm text-red-600">{errors.code.message}</p>
+          )}
+        </div>
+
+        <div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">
+              Quantity *
+            </label>
+            <input
+              type="number"
+              {...register("stockQuantity", {
+                required: "Quantity is required",
+                valueAsNumber: true,
+                min: { value: 0, message: "Quantity must be non-negative" },
+              })}
+              className={cn(
+                "w-full rounded-lg border px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500",
+                errors.stockQuantity ? "border-red-500" : "border-gray-300",
+              )}
+            />
+            {errors.stockQuantity && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.stockQuantity.message}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <label className="mb-1 block text-sm font-medium text-gray-700">
+            Description *
+          </label>
+          <textarea
+            {...register("description", {
+              required: "Description is required",
+            })}
+            rows={3}
+            className={cn(
+              "w-full rounded-lg border px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500",
+              errors.description ? "border-red-500" : "border-gray-300",
+            )}
+          />
+          {errors.description && (
+            <p className="mt-1 text-sm text-red-600">
+              {errors.description.message}
+            </p>
+          )}
+        </div>
+
+        <div className="flex justify-end space-x-4 border-t border-slate-200 pt-4">
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              setImagePreview(null);
+              setSelectedImage(null);
+            }}
+            className="px-4 py-2 text-gray-600 transition-colors hover:cursor-pointer hover:text-gray-800"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="submit"
+            disabled={isPendingMutateAddInventory}
+            className="flex items-center space-x-2 rounded-lg bg-blue-600 px-6 py-2 text-white transition-colors hover:cursor-pointer hover:bg-blue-700 disabled:opacity-50"
+          >
+            {isPendingMutateAddInventory ? (
+              <>
+                <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
+                <span>Saving...</span>
+              </>
+            ) : (
+              <span>Create Item</span>
+            )}
+          </button>
+        </div>
+      </form>
+    </FormModal>
+  );
+};
+
+export default AddInventoryModal;

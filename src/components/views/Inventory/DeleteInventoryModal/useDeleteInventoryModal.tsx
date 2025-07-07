@@ -7,7 +7,6 @@ const useDeleteInventoryModal = () => {
   const { setToaster } = useContext(ToasterContext);
 
   const deleteInventory = async (id: string) => {
-    console.log("ID", id);
     const response = await inventoryServices.deleteInventory(id);
 
     return response;

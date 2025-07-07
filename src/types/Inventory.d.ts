@@ -4,11 +4,13 @@ interface InventoryItem {
   description: string;
   stockQuantity: number;
   code: string;
-  image: string | FileList;
+  image: string | File;
 }
 
-interface IInventoryForm extends InventoryItem<Pick<"id">> {
+interface IInventoryForm extends Omit<InventoryItem, "id"> {
   id?: string;
 }
 
-export type { InventoryItem, IInventoryForm };
+type InventoryList = InventoryItem[];
+
+export type { InventoryItem, IInventoryForm, InventoryList };

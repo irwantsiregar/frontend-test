@@ -21,7 +21,7 @@ const useLogin = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const { toaster, setToaster } = useContext(ToasterContext);
+  const { setToaster } = useContext(ToasterContext);
 
   const {
     register,
@@ -85,7 +85,6 @@ const useLogin = () => {
     handleLogin,
     isPendingLogin,
     errors,
-    toaster,
   };
 };
 

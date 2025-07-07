@@ -5,7 +5,6 @@ import useDeleteInventoryModal from "./useDeleteInventoryModal";
 interface IDeleteInventoryModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onOpenChange: () => void;
   selectedId: string;
   setSelectedId: Dispatch<SetStateAction<string>>;
   refetchInventories: () => void;
@@ -15,7 +14,6 @@ const DeleteInventoryModal = (props: IDeleteInventoryModalProps) => {
   const {
     isOpen,
     onClose,
-    onOpenChange,
     selectedId,
     setSelectedId,
     refetchInventories,

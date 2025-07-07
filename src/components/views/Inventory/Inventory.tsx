@@ -1,12 +1,14 @@
 "use client";
 
 import DataTable from "@/components/ui/data-table";
+import environment from "@/config/environtment";
 import useChangeUrl from "@/hooks/useChangeUrl";
 import { useDisclosure } from "@/hooks/useDisclosure";
 import type { InventoryItem } from "@/types/Inventory";
 import { cn } from "@/utils/cn";
 import { AlertCircle, Edit, Package, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import AddInventoryModal from "./AddInventoryModal";
 import DeleteInventoryModal from "./DeleteInventoryModal";
 import useInventory from "./useInventory";
 
@@ -41,20 +43,38 @@ export default function Inventory() {
     handleChangePage(page);
   }, [page]);
 
+  const addInventory = useDisclosure();
   const deleteInventory = useDisclosure();
 
   const columns: any = [
+    {
+      key: "image" as keyof InventoryItem,
+      header: "Image",
+      render: (value: string) => (
+        <div className="flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg bg-gray-100">
+          {value ? (
+            <img
+              src={value ? `${environment.STORAGE_URL + value}` : ""}
+              alt="Product"
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <Package className="h-6 w-6 text-gray-400" />
+          )}
+        </div>
+      ),
+    },
     {
       key: "name" as keyof InventoryItem,
       header: "Name",
     },
     {
       key: "code" as keyof InventoryItem,
-      header: "SKU",
+      header: "Code",
     },
     {
       key: "stockQuantity" as keyof InventoryItem,
-      header: "Quantity",
+      header: "Stock Quantity",
     },
   ];
 
@@ -69,8 +89,8 @@ export default function Inventory() {
           <p className="mt-1 text-gray-600">Manage your inventory items</p>
         </div>
         <button
-          onClick={() => {}}
-          className="flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
+          onClick={() => addInventory.onOpen()}
+          className="flex items-center space-x-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:cursor-pointer hover:bg-blue-700"
         >
           <Plus className="h-4 w-4" />
           <span>Add Item</span>
@@ -154,6 +174,12 @@ export default function Inventory() {
             </button>
           </div>
         )}
+      />
+
+      {/* Delete Modal */}
+      <AddInventoryModal
+        {...addInventory}
+        refetchInventories={refetchInventories}
       />
 
       {/* Delete Modal */}

@@ -13,7 +13,6 @@ export default function Login() {
     handleLogin,
     isPendingLogin,
     errors,
-    toaster,
   } = useLogin();
 
   return (
@@ -31,13 +30,11 @@ export default function Login() {
             <p className="text-gray-600">Sign in to your account</p>
           </div>
 
-          <div>
-            {!!toaster?.message && (
-              <p className="mb-2 font-medium text-red-500">
-                {toaster?.message}
-              </p>
-            )}
-          </div>
+          {errors?.root && (
+            <p className="text-danger mb-2 font-medium">
+              {errors?.root?.message}
+            </p>
+          )}
 
           {/* Login Form */}
           <form onSubmit={handleSubmit(handleLogin)} className="space-y-6">

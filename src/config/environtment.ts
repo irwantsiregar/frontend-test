@@ -1,5 +1,6 @@
 const environment = {
-  API_URL: process.env.NEXT_PUBLIC_API_URL,
+  API_URL: process.env.NEXT_PUBLIC_API_URL + "/api",
+  STORAGE_URL: process.env.NEXT_PUBLIC_API_URL + '/storage/',
   AUTH_SECRET: process.env.NEXTAUTH_SECRET,
 };
 
