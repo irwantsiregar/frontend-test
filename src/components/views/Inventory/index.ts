@@ -1,3 +1,3 @@
-import Login from "./Inventory";
+import Inventory from "./Inventory";
 
 export default Login;

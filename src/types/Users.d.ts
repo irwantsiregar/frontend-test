@@ -4,11 +4,12 @@ interface User {
   email: string;
   image?: string | File;
   isImmutable: boolean;
+  role?: string;
 }
 
 type TPassword = string;
 
-interface IAddUserForm extends Pick<User, "password"> {
+interface IAddUserForm extends Pick<User, "name" | "email" | "image"> {
   password: TPassword;
 }
 

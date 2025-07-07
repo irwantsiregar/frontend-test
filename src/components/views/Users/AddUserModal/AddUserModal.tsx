@@ -2,44 +2,45 @@
 
 import FormModal from "@/components/ui/form-modal";
 import { cn } from "@/utils/cn";
-import { Upload, X } from "lucide-react";
+import { Eye, EyeOff, Upload, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import useAddInventoryModal from "./useAddInventoryModal";
+import useAddUserModal from "./useAddUserModal";
 
-interface IAddInventoryModalProps {
+interface IAddUsersModalProps {
   isOpen: boolean;
   onClose: () => void;
-  refetchInventories: () => void;
+  refetchUsers: () => void;
 }
 
-const AddInventoryModal = (props: IAddInventoryModalProps) => {
-  const { isOpen, onClose, refetchInventories } = props;
+const AddUsersModal = (props: IAddUsersModalProps) => {
+  const { isOpen, onClose, refetchUsers } = props;
 
   const {
     register,
     errors,
     reset,
     handleSubmitForm,
-    handleAddInventory,
+    handleAddUser,
     handleOnClose,
 
-    isPendingMutateAddInventory,
-    isSuccessMutateAddInventory,
+    isPendingMutateAddUser,
+    isSuccessMutateAddUser,
 
     setSelectedImage,
     selectedImage,
-  } = useAddInventoryModal();
+
+    isVisible,
+    toggleVisibility,
+  } = useAddUserModal();
 
   useEffect(() => {
-    if (isSuccessMutateAddInventory) {
+    if (isSuccessMutateAddUser) {
       onClose();
-      refetchInventories();
+      refetchUsers();
     }
-  }, [isSuccessMutateAddInventory]);
+  }, [isSuccessMutateAddUser]);
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  // console.log(selectedImage);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -81,10 +82,7 @@ const AddInventoryModal = (props: IAddInventoryModalProps) => {
       title={"Add New Item"}
       maxWidth="2xl"
     >
-      <form
-        onSubmit={handleSubmitForm(handleAddInventory)}
-        className="space-y-6"
-      >
+      <form onSubmit={handleSubmitForm(handleAddUser)} className="space-y-6">
         {/* Image Upload Section */}
         <div className="space-y-4">
           <label className="block text-sm font-medium text-gray-700">
@@ -153,64 +151,67 @@ const AddInventoryModal = (props: IAddInventoryModalProps) => {
 
         <div>
           <label className="mb-1 block text-sm font-medium text-gray-700">
-            Code *
+            email *
           </label>
           <input
-            type="text"
-            {...register("code", { required: "Code is required" })}
+            type="email"
+            id="email"
+            {...register("email", {
+              required: "Email is required",
+              pattern: {
+                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                message: "Invalid email address",
+              },
+            })}
             className={cn(
               "w-full rounded-lg border px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500",
-              errors.code ? "border-red-500" : "border-gray-300",
+              errors.email ? "border-red-500" : "border-gray-300",
             )}
           />
-          {errors.code && (
-            <p className="mt-1 text-sm text-red-600">{errors.code.message}</p>
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
           )}
         </div>
 
         <div>
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">
-              Quantity *
-            </label>
-            <input
-              type="number"
-              {...register("stockQuantity", {
-                required: "Quantity is required",
-                valueAsNumber: true,
-                min: { value: 0, message: "Quantity must be non-negative" },
-              })}
-              min={0}
-              className={cn(
-                "w-full rounded-lg border px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500",
-                errors.stockQuantity ? "border-red-500" : "border-gray-300",
-              )}
-            />
-            {errors.stockQuantity && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.stockQuantity.message}
-              </p>
-            )}
-          </div>
-        </div>
-
-        <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
-            Description *
+          <label
+            htmlFor="password"
+            className="mb-2 block text-sm font-medium text-gray-700"
+          >
+            Password
           </label>
-          <textarea
-            {...register("description", {
-              required: "Description is required",
-            })}
-            rows={3}
-            className={cn(
-              "w-full rounded-lg border px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500",
-              errors.description ? "border-red-500" : "border-gray-300",
-            )}
-          />
-          {errors.description && (
+          <div className="relative">
+            <input
+              type={isVisible ? "text" : "password"}
+              id="password"
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+              })}
+              className={cn(
+                "w-full rounded-lg border px-4 py-3 pr-12 transition-colors focus:border-transparent focus:ring-2 focus:ring-blue-500",
+                errors.password ? "border-red-500" : "border-gray-300",
+              )}
+              placeholder="Enter your password"
+            />
+            <button
+              type="button"
+              onClick={toggleVisibility}
+              className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-500 hover:text-gray-700"
+            >
+              {isVisible ? (
+                <EyeOff className="h-5 w-5" />
+              ) : (
+                <Eye className="h-5 w-5" />
+              )}
+            </button>
+          </div>
+          {errors.password && (
             <p className="mt-1 text-sm text-red-600">
-              {errors.description.message}
+              {errors.password.message}
             </p>
           )}
         </div>
@@ -230,16 +231,16 @@ const AddInventoryModal = (props: IAddInventoryModalProps) => {
 
           <button
             type="submit"
-            disabled={isPendingMutateAddInventory}
+            disabled={isPendingMutateAddUser}
             className="flex items-center space-x-2 rounded-lg bg-blue-600 px-6 py-2 text-white transition-colors hover:cursor-pointer hover:bg-blue-700 disabled:opacity-50"
           >
-            {isPendingMutateAddInventory ? (
+            {isPendingMutateAddUser ? (
               <>
                 <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
                 <span>Saving...</span>
               </>
             ) : (
-              <span>Create Item</span>
+              <span>Create User</span>
             )}
           </button>
         </div>
@@ -248,4 +249,4 @@ const AddInventoryModal = (props: IAddInventoryModalProps) => {
   );
 };
 
-export default AddInventoryModal;
+export default AddUsersModal;
